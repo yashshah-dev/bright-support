@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   output: 'export',
+  basePath: '/bright-support',
   images: {
     unoptimized: true, // Required for static export
   },
