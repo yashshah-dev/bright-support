@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "next build && npm run copy-headers",
+    "copy-headers": "cp public/_headers out/_headers 2>/dev/null || true",
     "start": "next start",
     "lint": "eslint",
     "export": "next build && touch out/.nojekyll"
