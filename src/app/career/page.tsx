@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import Image from 'next/image';
+import { ResponsiveImage } from '@/components/ResponsiveImage';
 import { CheckCircle, Award, TrendingUp, Heart, Users, Clock } from 'lucide-react';
 import { getAssetPath } from '@/lib/utils';
 
@@ -101,12 +101,12 @@ export default function CareerPage() {
               </p>
             </div>
             <div className="relative rounded-3xl overflow-hidden shadow-elegant-lg">
-              <Image
-                src={getAssetPath("/images/career/team-culture.webp")}
+              <ResponsiveImage
+                src="/images/career/team-culture.webp"
                 alt="Bright Support team members in training and collaboration session"
+                className="w-full h-auto object-cover"
                 width={1200}
                 height={700}
-                className="w-full h-auto object-cover"
               />
             </div>
           </div>

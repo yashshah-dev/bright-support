@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import Image from 'next/image';
+import { ResponsiveImage } from '@/components/ResponsiveImage';
 import { 
   Heart, Users, Home, Activity, Stethoscope, Car, 
   Sparkles, Clock, Shield, CheckCircle, Phone 
@@ -109,17 +109,14 @@ export default function HomePage() {
             </div>
             <div className="order-1 lg:order-2">
               <div className="relative rounded-3xl overflow-hidden shadow-elegant-lg">
-                <Image
-                  src={getAssetPath("/images/hero/hero-main.webp")}
+                <ResponsiveImage
+                  src="/images/hero/hero-main.webp"
                   alt="NDIS support worker providing compassionate care to participant"
-                  width={1200}
-                  height={800}
                   priority
-                  quality={90}
-                  placeholder="blur"
-                  blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBAQFBAYFBQYJBgUGCQsIBgYICwwKCgsKCgwQDAwMDAwMEAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAz/2wBDAQcICAsJCxULCxUMDQwNDA0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ3/wgARCAAKAAoDAREAAhEBAxEB/8QAFwABAQEBAAAAAAAAAAAAAAAAAAECA//EABQBAQAAAAAAAAAAAAAAAAAAAAD/2gAMAwEAAhADEAAAAdygP//EABQQAQAAAAAAAAAAAAAAAAAAAAD/2gAIAQEAAQUCf//EABQRAQAAAAAAAAAAAAAAAAAAAAD/2gAIAQMBAT8Bf//EABQRAQAAAAAAAAAAAAAAAAAAAAD/2gAIAQIBAT8Bf//EABQQAQAAAAAAAAAAAAAAAAAAAAD/2gAIAQEABj8Cf//EABQQAQAAAAAAAAAAAAAAAAAAAAD/2gAIAQEAAT8hf//aAAwDAQACAAMAAAAQAA//xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oACAEDAQE/EH//xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oACAECAQE/EH//xAAUEAEAAAAAAAAAAAAAAAAAAAAA/9oACAEBAAE/EH//2Q=="
                   className="w-full h-auto object-cover"
                   sizes="(max-width: 768px) 100vw, 50vw"
+                  width={1200}
+                  height={800}
                 />
               </div>
             </div>
@@ -217,17 +214,14 @@ export default function HomePage() {
               ))}
             </div>
             <div className="relative rounded-3xl overflow-hidden shadow-elegant-lg">
-              <Image
-                src={getAssetPath("/images/general/services-in-action.webp")}
+              <ResponsiveImage
+                src="/images/general/services-in-action.webp"
                 alt="NDIS support worker assisting participant with daily living activities"
-                width={800}
-                height={1000}
                 loading="lazy"
-                quality={85}
-                placeholder="blur"
-                blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBAQFBAYFBQYJBgUGCQsIBgYICwwKCgsKCgwQDAwMDAwMEAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAz/2wBDAQcICAsJCxULCxUMDQwNDA0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ3/wgARCAAKAAoDAREAAhEBAxEB/8QAFwABAQEBAAAAAAAAAAAAAAAAAAECA//EABQBAQAAAAAAAAAAAAAAAAAAAAD/2gAMAwEAAhADEAAAAdygP//EABQQAQAAAAAAAAAAAAAAAAAAAAD/2gAIAQEAAQUCf//EABQRAQAAAAAAAAAAAAAAAAAAAAD/2gAIAQMBAT8Bf//EABQRAQAAAAAAAAAAAAAAAAAAAAD/2gAIAQIBAT8Bf//EABQQAQAAAAAAAAAAAAAAAAAAAAD/2gAIAQEABj8Cf//EABQQAQAAAAAAAAAAAAAAAAAAAAD/2gAIAQEAAT8hf//aAAwDAQACAAMAAAAQAA//xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oACAEDAQE/EH//xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oACAECAQE/EH//xAAUEAEAAAAAAAAAAAAAAAAAAAAA/9oACAEBAAE/EH//2Q=="
                 className="w-full h-auto object-cover"
                 sizes="(max-width: 768px) 100vw, 50vw"
+                width={800}
+                height={1000}
               />
             </div>
           </div>

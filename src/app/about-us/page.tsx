@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import Image from 'next/image';
+import { ResponsiveImage } from '@/components/ResponsiveImage';
 import { Target, Users, Heart, Award, Download } from 'lucide-react';
 import { getAssetPath } from '@/lib/utils';
 
@@ -29,12 +29,13 @@ export default function AboutUsPage() {
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
             <div className="relative rounded-3xl overflow-hidden shadow-elegant-lg">
-              <Image
-                src={getAssetPath("/images/about/team-photo.webp")}
+              <ResponsiveImage
+                src="/images/about/team-photo.webp"
                 alt="Bright Support team of healthcare professionals and support workers"
+                className="w-full h-auto object-cover"
+                widths={[480,768,1024,1400]}
                 width={1400}
                 height={600}
-                className="w-full h-auto object-cover"
               />
             </div>
           </div>
@@ -205,12 +206,12 @@ export default function AboutUsPage() {
               </p>
             </div>
             <div className="relative rounded-3xl overflow-hidden shadow-elegant-lg">
-              <Image
-                src={getAssetPath("/images/about/community-impact.webp")}
+              <ResponsiveImage
+                src="/images/about/community-impact.webp"
                 alt="NDIS participants and support workers enjoying community activities together"
+                className="w-full h-auto object-cover"
                 width={1400}
                 height={600}
-                className="w-full h-auto object-cover"
               />
             </div>
           </div>

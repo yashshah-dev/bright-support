@@ -2,7 +2,7 @@
 
 import { Metadata } from 'next';
 import { useState } from 'react';
-import Image from 'next/image';
+import { ResponsiveImage } from '@/components/ResponsiveImage';
 import { Phone, Mail, MapPin, Clock, Send } from 'lucide-react';
 import { getAssetPath } from '@/lib/utils';
 
@@ -72,12 +72,12 @@ export default function ContactUsPage() {
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto mb-16">
             <div className="relative rounded-3xl overflow-hidden shadow-elegant-lg">
-              <Image
-                src={getAssetPath("/images/contact/office-welcome.webp")}
+              <ResponsiveImage
+                src="/images/contact/office-welcome.webp"
                 alt="Bright Support welcoming office reception area"
+                className="w-full h-auto object-cover"
                 width={800}
                 height={500}
-                className="w-full h-auto object-cover"
               />
             </div>
           </div>
