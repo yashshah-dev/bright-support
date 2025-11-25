@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { Phone, CheckCircle } from 'lucide-react';
 import FAQ from './FAQ';
 
@@ -164,17 +165,17 @@ export default function ServicePageTemplate({
             <div className="flex flex-col sm:flex-row gap-5 justify-center">
               <a
                 href="tel:1800407508"
-                className="bg-white hover:bg-amber-50 text-indigo-600 px-10 py-4 rounded-full font-semibold text-lg transition-all duration-300 hover:scale-105 shadow-xl flex items-center justify-center gap-2"
+                className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-10 py-4 rounded-full font-semibold text-lg transition-all duration-300 hover:scale-105 shadow-xl flex items-center justify-center gap-2"
               >
                 <Phone size={20} />
                 1800 407 508
               </a>
-              <a
+              <Link
                 href="/contact-us"
                 className="bg-amber-500 hover:bg-amber-400 text-white px-10 py-4 rounded-full font-semibold text-lg transition-all duration-300 hover:scale-105 shadow-xl"
               >
                 Contact Us Online
-              </a>
+              </Link>
             </div>
           </div>
         </div>

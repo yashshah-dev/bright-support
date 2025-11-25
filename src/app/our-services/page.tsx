@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import Link from 'next/link';
 import ServiceCard from '@/components/ServiceCard';
 import { 
   Home, Building2, Stethoscope, Users, Activity, Dumbbell,
@@ -154,12 +155,12 @@ export default function OurServicesPage() {
               >
                 Call Us: 1800 407 508
               </a>
-              <a
+              <Link
                 href="/contact-us"
                 className="bg-amber-500 hover:bg-amber-400 text-white px-10 py-4 rounded-full font-semibold text-lg transition-all duration-300 hover:scale-105 shadow-elegant-lg"
               >
                 Contact Us Online
-              </a>
+              </Link>
             </div>
           </div>
         </div>

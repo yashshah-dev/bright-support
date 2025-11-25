@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import Link from 'next/link';
 import { ResponsiveImage } from '@/components/ResponsiveImage';
 import { CheckCircle, Award, TrendingUp, Heart, Users, Clock } from 'lucide-react';
 import { getAssetPath } from '@/lib/utils';
@@ -231,12 +232,12 @@ export default function CareerPage() {
               >
                 Call Us: 1800 407 508
               </a>
-              <a
+              <Link
                 href="/contact-us"
                 className="border-2 border-white hover:bg-white/10 text-white px-10 py-4 rounded-full font-semibold text-lg transition-all duration-300 hover:scale-105"
               >
                 Contact Us
-              </a>
+              </Link>
             </div>
           </div>
         </div>
