@@ -97,68 +97,17 @@ export default function RootLayout({
                 if ('performance' in window && 'getEntriesByType' in performance) {
                   window.addEventListener('load', function() {
                     setTimeout(function() {
-                      const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
+                      var navigation = performance.getEntriesByType('navigation')[0];
                       if (navigation) {
                         gtag('event', 'page_load_time', {
                           page_load_time: navigation.loadEventEnd - navigation.fetchStart,
                           dom_content_loaded: navigation.domContentLoadedEventEnd - navigation.fetchStart,
-                          first_paint: performance.getEntriesByName('first-paint')[0]?.startTime || 0,
-                          first_contentful_paint: performance.getEntriesByName('first-contentful-paint')[0]?.startTime || 0
+                          first_paint: performance.getEntriesByName('first-paint')[0] ? performance.getEntriesByName('first-paint')[0].startTime : 0,
+                          first_contentful_paint: performance.getEntriesByName('first-contentful-paint')[0] ? performance.getEntriesByName('first-contentful-paint')[0].startTime : 0
                         });
                       }
                     }, 0);
                   });
-                }
-
-                // Track Core Web Vitals
-                if ('web-vitals' in window || typeof importScripts === 'function') {
-                  try {
-                    import('https://unpkg.com/web-vitals@3/dist/web-vitals.attribution.iife.js').then(({getCLS, getFID, getFCP, getLCP, getTTFB}) => {
-                      getCLS((metric) => {
-                        gtag('event', 'web_vitals', {
-                          web_vitals_metric: 'CLS',
-                          web_vitals_value: metric.value,
-                          web_vitals_rating: metric.rating,
-                          debug_target: metric.attribution?.element || 'unknown'
-                        });
-                      });
-
-                      getFID((metric) => {
-                        gtag('event', 'web_vitals', {
-                          web_vitals_metric: 'FID',
-                          web_vitals_value: metric.value,
-                          web_vitals_rating: metric.rating
-                        });
-                      });
-
-                      getFCP((metric) => {
-                        gtag('event', 'web_vitals', {
-                          web_vitals_metric: 'FCP',
-                          web_vitals_value: metric.value,
-                          web_vitals_rating: metric.rating
-                        });
-                      });
-
-                      getLCP((metric) => {
-                        gtag('event', 'web_vitals', {
-                          web_vitals_metric: 'LCP',
-                          web_vitals_value: metric.value,
-                          web_vitals_rating: metric.rating,
-                          debug_target: metric.attribution?.element || 'unknown'
-                        });
-                      });
-
-                      getTTFB((metric) => {
-                        gtag('event', 'web_vitals', {
-                          web_vitals_metric: 'TTFB',
-                          web_vitals_value: metric.value,
-                          web_vitals_rating: metric.rating
-                        });
-                      });
-                    });
-                  } catch (e) {
-                    console.log('Web Vitals tracking not available');
-                  }
                 }
               `,
             }}
