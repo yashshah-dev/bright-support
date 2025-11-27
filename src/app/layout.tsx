@@ -6,6 +6,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ChatWidget from "@/components/ChatWidget";
 import StructuredData from "@/components/StructuredData";
+import { AnalyticsProvider } from "@/components/AnalyticsProvider";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -67,17 +68,110 @@ export default function RootLayout({
                 window.dataLayer = window.dataLayer || [];
                 function gtag(){dataLayer.push(arguments);}
                 gtag('js', new Date());
-                gtag('config', '${process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID}');
+
+                // Initialize consent settings
+                gtag('consent', 'default', {
+                  analytics_storage: 'granted',
+                  ad_storage: 'denied',
+                  functionality_storage: 'granted',
+                  personalization_storage: 'denied',
+                  security_storage: 'granted'
+                });
+
+                // Configure GA4 with enhanced settings
+                gtag('config', '${process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID}', {
+                  page_title: document.title,
+                  page_location: window.location.href,
+                  send_page_view: true,
+                  allow_google_signals: false,
+                  allow_ad_personalization_signals: false,
+                  allow_ad_features: false,
+                  custom_map: {
+                    'custom_parameter_1': 'user_type',
+                    'custom_parameter_2': 'service_interest',
+                    'custom_parameter_3': 'lead_source'
+                  }
+                });
+
+                // Track initial page load performance
+                if ('performance' in window && 'getEntriesByType' in performance) {
+                  window.addEventListener('load', function() {
+                    setTimeout(function() {
+                      const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
+                      if (navigation) {
+                        gtag('event', 'page_load_time', {
+                          page_load_time: navigation.loadEventEnd - navigation.fetchStart,
+                          dom_content_loaded: navigation.domContentLoadedEventEnd - navigation.fetchStart,
+                          first_paint: performance.getEntriesByName('first-paint')[0]?.startTime || 0,
+                          first_contentful_paint: performance.getEntriesByName('first-contentful-paint')[0]?.startTime || 0
+                        });
+                      }
+                    }, 0);
+                  });
+                }
+
+                // Track Core Web Vitals
+                if ('web-vitals' in window || typeof importScripts === 'function') {
+                  try {
+                    import('https://unpkg.com/web-vitals@3/dist/web-vitals.attribution.iife.js').then(({getCLS, getFID, getFCP, getLCP, getTTFB}) => {
+                      getCLS((metric) => {
+                        gtag('event', 'web_vitals', {
+                          web_vitals_metric: 'CLS',
+                          web_vitals_value: metric.value,
+                          web_vitals_rating: metric.rating,
+                          debug_target: metric.attribution?.element || 'unknown'
+                        });
+                      });
+
+                      getFID((metric) => {
+                        gtag('event', 'web_vitals', {
+                          web_vitals_metric: 'FID',
+                          web_vitals_value: metric.value,
+                          web_vitals_rating: metric.rating
+                        });
+                      });
+
+                      getFCP((metric) => {
+                        gtag('event', 'web_vitals', {
+                          web_vitals_metric: 'FCP',
+                          web_vitals_value: metric.value,
+                          web_vitals_rating: metric.rating
+                        });
+                      });
+
+                      getLCP((metric) => {
+                        gtag('event', 'web_vitals', {
+                          web_vitals_metric: 'LCP',
+                          web_vitals_value: metric.value,
+                          web_vitals_rating: metric.rating,
+                          debug_target: metric.attribution?.element || 'unknown'
+                        });
+                      });
+
+                      getTTFB((metric) => {
+                        gtag('event', 'web_vitals', {
+                          web_vitals_metric: 'TTFB',
+                          web_vitals_value: metric.value,
+                          web_vitals_rating: metric.rating
+                        });
+                      });
+                    });
+                  } catch (e) {
+                    console.log('Web Vitals tracking not available');
+                  }
+                }
               `,
             }}
           />
         )}
       </head>
       <body className={`${inter.className} antialiased`}>
-        <Header />
-        <main className="min-h-screen">{children}</main>
-        <Footer />
-        <ChatWidget />
+        <AnalyticsProvider>
+          <Header />
+          <main className="min-h-screen">{children}</main>
+          <Footer />
+          <ChatWidget />
+        </AnalyticsProvider>
       </body>
     </html>
   );

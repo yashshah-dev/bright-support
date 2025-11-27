@@ -5,7 +5,8 @@ import { useState } from 'react';
 import { ResponsiveImage } from '@/components/ResponsiveImage';
 import { Phone, Mail, MapPin, Clock, Send } from 'lucide-react';
 import { getAssetPath } from '@/lib/utils';
-import { trackPhoneCall, trackButtonClick, trackServiceInquiry } from '@/lib/analytics';
+import { trackPhoneCall, trackButtonClick, trackServiceInquiry, trackFormSubmission, trackFormError } from '@/lib/analytics';
+import { useFormTracking } from '@/hooks/useAnalytics';
 
 export default function ContactUsPage() {
   const [formData, setFormData] = useState({
@@ -17,18 +18,52 @@ export default function ContactUsPage() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+
+  const { trackInteraction, getFormMetrics } = useFormTracking();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [name]: value,
     });
+
+    // Track form interaction
+    trackInteraction();
+
+    // Clear field error when user starts typing
+    if (fieldErrors[name]) {
+      setFieldErrors(prev => ({ ...prev, [name]: '' }));
+    }
+  };
+
+  const validateForm = () => {
+    const errors: Record<string, string> = {};
+
+    if (!formData.name.trim()) errors.name = 'Name is required';
+    if (!formData.email.trim()) errors.email = 'Email is required';
+    else if (!/\S+@\S+\.\S+/.test(formData.email)) errors.email = 'Email is invalid';
+    if (!formData.subject) errors.subject = 'Please select a subject';
+    if (!formData.message.trim()) errors.message = 'Message is required';
+
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     setSubmitStatus('idle');
+
+    // Validate form
+    if (!validateForm()) {
+      trackFormError('contact_form', 'validation', 'Form validation failed');
+      setIsSubmitting(false);
+      return;
+    }
+
+    const formMetrics = getFormMetrics();
 
     try {
       const response = await fetch('/api/contact', {
@@ -42,18 +77,41 @@ export default function ContactUsPage() {
       if (response.ok) {
         setSubmitStatus('success');
         setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
-        // Track successful form submission
-        trackServiceInquiry('contact_form', {
+        setFieldErrors({});
+
+        // Enhanced form submission tracking
+        trackFormSubmission('contact_form', true, {
           subject: formData.subject,
           has_phone: !!formData.phone,
-          source: 'contact_page'
+          source: 'contact_page',
+          form_completion_time: formMetrics.timeSpent,
+          form_interactions: formMetrics.interactions,
+        });
+
+        // Track as lead generation
+        trackServiceInquiry(formData.subject, {
+          lead_value: 1, // Assign a value to form submissions
+          lead_source: 'contact_form',
+          customer_email: formData.email,
+          customer_phone: formData.phone,
+          inquiry_details: formData.message.substring(0, 100), // First 100 chars
         });
       } else {
         setSubmitStatus('error');
+        trackFormSubmission('contact_form', false, {
+          subject: formData.subject,
+          error_type: 'server_error',
+          response_status: response.status,
+        });
       }
     } catch (error) {
       console.error('Form submission error:', error);
       setSubmitStatus('error');
+      trackFormSubmission('contact_form', false, {
+        subject: formData.subject,
+        error_type: 'network_error',
+        error_message: error instanceof Error ? error.message : 'Unknown error',
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -194,9 +252,14 @@ export default function ContactUsPage() {
                       value={formData.name}
                       onChange={handleChange}
                       required
-                      className="w-full px-5 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all duration-300 bg-slate-50 hover:bg-white"
+                      className={`w-full px-5 py-3 border rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all duration-300 bg-slate-50 hover:bg-white ${
+                        fieldErrors.name ? 'border-red-300 bg-red-50' : 'border-slate-200'
+                      }`}
                       placeholder="John Smith"
                     />
+                    {fieldErrors.name && (
+                      <p className="text-red-600 text-sm mt-1">{fieldErrors.name}</p>
+                    )}
                   </div>
 
                   <div>
@@ -210,9 +273,14 @@ export default function ContactUsPage() {
                       value={formData.email}
                       onChange={handleChange}
                       required
-                      className="w-full px-5 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all duration-300 bg-slate-50 hover:bg-white"
+                      className={`w-full px-5 py-3 border rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all duration-300 bg-slate-50 hover:bg-white ${
+                        fieldErrors.email ? 'border-red-300 bg-red-50' : 'border-slate-200'
+                      }`}
                       placeholder="john@example.com"
                     />
+                    {fieldErrors.email && (
+                      <p className="text-red-600 text-sm mt-1">{fieldErrors.email}</p>
+                    )}
                   </div>
 
                   <div>
@@ -240,7 +308,9 @@ export default function ContactUsPage() {
                       value={formData.subject}
                       onChange={handleChange}
                       required
-                      className="w-full px-5 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all duration-300 bg-slate-50 hover:bg-white"
+                      className={`w-full px-5 py-3 border rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all duration-300 bg-slate-50 hover:bg-white ${
+                        fieldErrors.subject ? 'border-red-300 bg-red-50' : 'border-slate-200'
+                      }`}
                     >
                       <option value="">Select a subject</option>
                       <option value="general">General Inquiry</option>
@@ -249,6 +319,9 @@ export default function ContactUsPage() {
                       <option value="career">Career Opportunities</option>
                       <option value="feedback">Feedback</option>
                     </select>
+                    {fieldErrors.subject && (
+                      <p className="text-red-600 text-sm mt-1">{fieldErrors.subject}</p>
+                    )}
                   </div>
 
                   <div>
@@ -262,9 +335,14 @@ export default function ContactUsPage() {
                       onChange={handleChange}
                       required
                       rows={5}
-                      className="w-full px-5 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all duration-300 resize-none bg-slate-50 hover:bg-white"
+                      className={`w-full px-5 py-3 border rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all duration-300 resize-none bg-slate-50 hover:bg-white ${
+                        fieldErrors.message ? 'border-red-300 bg-red-50' : 'border-slate-200'
+                      }`}
                       placeholder="How can we help you?"
                     ></textarea>
+                    {fieldErrors.message && (
+                      <p className="text-red-600 text-sm mt-1">{fieldErrors.message}</p>
+                    )}
                   </div>
 
                   {submitStatus === 'success' && (

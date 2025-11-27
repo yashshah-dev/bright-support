@@ -11,9 +11,12 @@ import Testimonials from '@/components/Testimonials';
 import FAQ from '@/components/FAQ';
 import { getAssetPath } from '@/lib/utils';
 import { trackPhoneCall, trackButtonClick } from '@/lib/analytics';
+import { useVideoTracking } from '@/hooks/useAnalytics';
 
 export default function HomePage() {
   const [videoReady, setVideoReady] = useState(false);
+  const { trackVideoPlay, trackVideoPause, trackVideoComplete } = useVideoTracking();
+
   function LazyVideoEmbed({ videoId, title }: { videoId: string; title: string }) {
     const [load, setLoad] = useState(false);
     const thumb = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
@@ -23,7 +26,10 @@ export default function HomePage() {
           <button
             type="button"
             aria-label={`Play video: ${title}`}
-            onClick={() => setLoad(true)}
+            onClick={() => {
+              setLoad(true);
+              trackVideoPlay(title, { video_id: videoId, source: 'homepage' });
+            }}
             className="group w-full h-full relative"
             style={{ display: 'block' }}
           >
@@ -47,12 +53,16 @@ export default function HomePage() {
           <iframe
             width="100%"
             height="100%"
-            src={`https://www.youtube.com/embed/${videoId}?autoplay=1`}
+            src={`https://www.youtube.com/embed/${videoId}?autoplay=1&enablejsapi=1`}
             title={title}
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
             loading="lazy"
             className="w-full h-full"
+            onLoad={() => {
+              // Track video load completion
+              setTimeout(() => trackVideoPlay(title, { video_id: videoId, source: 'homepage', loaded: true }), 1000);
+            }}
           ></iframe>
         )}
       </div>
